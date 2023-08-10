@@ -35,6 +35,10 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     XiaomiPeripheralManager
 
+# Rootdir
+PRODUCT_PACKAGES += \
+    init.device.rc
+
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += \
     $(LOCAL_PATH)
