@@ -119,8 +119,16 @@ class PenService : Service() {
         val adapter = bluetoothManager.adapter
         @Suppress("DEPRECATION") adapter.enable()
 
-        val scanner = adapter.bluetoothLeScanner
-        scanner.startScan(
+        val scanner = run {
+            repeat(50) {
+                adapter.bluetoothLeScanner?.let {
+                    return@run it
+                }
+                Thread.sleep(100)
+            }
+            return@run null
+        }
+        scanner?.startScan(
             listOf(ScanFilter.Builder().setDeviceAddress(pencilAddr).build()),
             ScanSettings.Builder()
                 .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
