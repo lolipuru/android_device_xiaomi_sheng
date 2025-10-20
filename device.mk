@@ -46,6 +46,11 @@ $(call soong_config_set_bool,recovery,target_recovery_uses_qti_drm,true)
 PRODUCT_PACKAGES += \
     init.device.rc
 
+# Properties
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/properties/odm_CN.prop:$(TARGET_COPY_OUT_ODM)/etc/odm_CN.prop \
+    $(LOCAL_PATH)/properties/odm_GL.prop:$(TARGET_COPY_OUT_ODM)/etc/odm_GL.prop
+
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += \
     $(LOCAL_PATH)

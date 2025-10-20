@@ -1,3 +1,6 @@
 # Display
 vendor.display.disable_3d_adaptive_tm=1
 persist.sys.miui_resolution=1440x3200
+
+# SKU
+import /odm/etc/odm_${ro.boot.hwc}.prop
