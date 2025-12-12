@@ -24,14 +24,13 @@ import android.os.IBinder
 import android.os.UEventObserver
 import android.provider.Settings
 import android.provider.Settings.System.PEAK_REFRESH_RATE
+import android.provider.Settings.System.MIN_REFRESH_RATE
 import android.util.Log
 
 class PenService : Service() {
     private val bluetoothManager by lazy { getSystemService(BluetoothManager::class.java) }
     private val inputManager by lazy { getSystemService(InputManager::class.java) }
     private val notificationManager by lazy { getSystemService(NotificationManager::class.java) }
-
-    private val penSupportedRefreshRate by lazy { getString(R.string.config_penSupportedRefreshRate) }
 
     private val handler by lazy { Handler(mainLooper) }
 
@@ -40,14 +39,14 @@ class PenService : Service() {
 
         override fun onUEvent(event: UEvent) {
             synchronized(lock) {
-                val pencilStatus = event.get("pencil_status") ?: return
-                val pencilAddr = event.get("pencil_addr")?.chunked(2)?.joinToString(":") {
+                val pencilStatus = event.get("POWER_SUPPLY_PEN_HALL3") ?: return
+                val pencilAddr = event.get("POWER_SUPPLY_PEN_MAC")?.chunked(2)?.joinToString(":") {
                     it.uppercase()
                 } ?: return
 
                 when (pencilStatus) {
-                    "0" -> notificationManager.cancel(NOTIFICATION_ID)
-                    "1" -> postNotification(pencilAddr)
+                    "0" -> postNotification(pencilAddr)
+                    "1" -> notificationManager.cancel(NOTIFICATION_ID)
                 }
             }
         }
@@ -89,29 +88,16 @@ class PenService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-
-        if (!penSupportedRefreshRate.isEmpty()) {
-            contentResolver.registerContentObserver(
-                Settings.System.getUriFor(PEAK_REFRESH_RATE),
-                false,
-                peakRefreshRateSettingsObserver
-            )
-            peakRefreshRateSettingsObserver.onChange(true)
-
-            inputManager.registerInputDeviceListener(inputObserver, handler)
-        }
-
-        observer.startObserving("DEVPATH=/devices/virtual/oplus_wireless/pencil")
+        overridePeakRefreshRateIfNeeded()
+        inputManager.registerInputDeviceListener(inputObserver, handler)
+        observer.startObserving("DEVPATH=/devices/platform/soc/soc:qcom,pmic_glink/soc:qcom,pmic_glink:qcom,battery_charger")
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
-        if (!penSupportedRefreshRate.isEmpty()) {
-            contentResolver.unregisterContentObserver(peakRefreshRateSettingsObserver)
-            inputManager.unregisterInputDeviceListener(inputObserver)
-        }
-
+        if (lastOverrideRefreshRateStatus) unregisterOverrideRefreshRate()
+        inputManager.unregisterInputDeviceListener(inputObserver)
         observer.stopObserving()
     }
 
@@ -155,30 +141,38 @@ class PenService : Service() {
         )
     }
 
+    private fun disablePenEvents() {
+        for (id in inputManager.inputDeviceIds) {
+            if (isXiaomiPenDevice(id)) inputManager.disableInputDevice(id)
+        }
+    }
+
+    private fun isXiaomiPenDevice(id: Int): Boolean {
+        val inputDevice = inputManager.getInputDevice(id) ?: return false
+        return inputDevice.getVendorId() == 34 && inputDevice.getProductId() == 19840
+    }
+
     private fun overridePeakRefreshRateIfNeeded() {
         val isPenConnected = inputManager.inputDeviceIds.firstOrNull {
-            val device = inputManager.getInputDevice(it) ?: return@firstOrNull false
-            if (device.vendorId != 0x22D9) {
-                // Not an OPPO vendor ID
-                return@firstOrNull false
-            }
-            if (device.bluetoothAddress?.startsWith("C0:87:06") == false) {
-                // Not a Maxeye MAC prefix
-                return@firstOrNull false
-            }
-            return@firstOrNull true
+            return@firstOrNull isXiaomiPenDevice(it)
         } != null
-        val peakRefreshRate = Settings.System.getString(contentResolver, PEAK_REFRESH_RATE)
 
-        if (isPenConnected && peakRefreshRate == "Infinity") {
-            Settings.System.putString(contentResolver, PEAK_REFRESH_RATE, penSupportedRefreshRate)
-        } else if (!isPenConnected && peakRefreshRate == penSupportedRefreshRate) {
-            Settings.System.putString(contentResolver, PEAK_REFRESH_RATE, "Infinity")
+        if (isPenConnected) {
+            Settings.System.putString(contentResolver, PEAK_REFRESH_RATE, "120.0")
+            Settings.System.putString(contentResolver, MIN_REFRESH_RATE, "120.0")
+            disablePenEvents()
+            if (!lastOverrideRefreshRateStatus) registerOverrideRefreshRate()
+        } else if (!isPenConnected) {
+            Settings.System.putString(contentResolver, PEAK_REFRESH_RATE, "0.0")
+            Settings.System.putString(contentResolver, MIN_REFRESH_RATE, "0.0")
+            if(lastOverrideRefreshRateStatus) unregisterOverrideRefreshRate()
         }
     }
 
     private fun postNotification(pencilAddr: String) {
         val adapter = bluetoothManager.adapter
+
+        if (pencilAddr == "0") return
 
         if (adapter.bondedDevices.contains(adapter.getRemoteDevice(pencilAddr))) {
             Log.e(TAG, "$pencilAddr already bonded, bailing out")
@@ -214,6 +208,25 @@ class PenService : Service() {
         notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
+    private fun registerOverrideRefreshRate() {
+        if (lastOverrideRefreshRateStatus) return
+        lastOverrideRefreshRateStatus = true
+        contentResolver.registerContentObserver(Settings.System.getUriFor(PEAK_REFRESH_RATE), false, peakRefreshRateSettingsObserver)
+        handler.post { peakRefreshRateSettingsObserver.onChange(true) }
+    }
+
+    private fun unregisterOverrideRefreshRate() {
+        if (!lastOverrideRefreshRateStatus) return
+
+        try {
+            contentResolver.unregisterContentObserver(peakRefreshRateSettingsObserver)
+        } catch (e: Exception) {
+            Log.w(TAG, "Unregister content observer failed", e)
+        } finally {
+            lastOverrideRefreshRateStatus = false
+        }
+    }
+
     companion object {
         private const val TAG = "XiaomiPenService"
 
@@ -221,5 +234,7 @@ class PenService : Service() {
 
         private const val NOTIFICATION_CHANNEL_ID = "XiaomiPen"
         private const val NOTIFICATION_ID = 1000
+
+        private var lastOverrideRefreshRateStatus = false
     }
 }
