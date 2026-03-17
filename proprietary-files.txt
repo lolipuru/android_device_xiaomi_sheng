@@ -946,7 +946,11 @@ odm/etc/disp0/mdss_dsi_n81a_36_02_0a_duledsi_dsc_vid/mi_gc_2.txt
 vendor/etc/df_default.xml
 
 # Fingerprint
+odm/etc/permissions/com.fingerprints.extension.xml
 odm/lib64/hw/fingerprint.fpc.so:odm/lib64/hw/fingerprint.fpc.default.so;FIX_SONAME
+odm/framework/com.fingerprints.extension.jar
+system/usr/idc/uinput-fpc.idc
+system/usr/keylayout/uinput-fpc.kl
 
 # Keyboard firmware
 odm/etc/Keyboard_Upgrade_0x01.bin
