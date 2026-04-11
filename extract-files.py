@@ -97,7 +97,7 @@ blob_fixups: blob_fixups_user_type = {
 }
 
 module = ExtractUtilsModule(
-    'vermeer',
+    'sheng',
     'xiaomi',
     blob_fixups=blob_fixups,
     lib_fixups=lib_fixups,

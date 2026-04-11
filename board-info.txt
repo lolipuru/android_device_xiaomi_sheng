@@ -1,1 +1,1 @@
-require board=vermeer|kalama
+require board=sheng|kalama

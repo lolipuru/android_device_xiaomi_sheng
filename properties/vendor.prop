@@ -1,5 +1,0 @@
-# Fingerprint
-persist.vendor.fingerprint.sensor_location=720|2882|124
-
-# System properties
-ro.product.property_source_order=odm,vendor,product,system_ext,system

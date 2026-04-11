@@ -8,30 +8,35 @@
 include device/xiaomi/sm8550-common/BoardConfigCommon.mk
 
 # Inherit from the proprietary version
-include vendor/xiaomi/vermeer/BoardConfigVendor.mk
+include vendor/xiaomi/sheng/BoardConfigVendor.mk
 
-DEVICE_PATH := device/xiaomi/vermeer
+DEVICE_PATH := device/xiaomi/sheng
 
 # Display
-TARGET_SCREEN_DENSITY := 530
+TARGET_SCREEN_DENSITY := 400
 
 # Kernel
 BOARD_VENDOR_KERNEL_MODULES_LOAD += \
-    aw882xx_dlkm.ko \
-    goodix_fod.ko \
-    goodix_core.ko \
+    cs35l43.ko \
+    fpc1552.ko \
+    nt36532_touch.ko \
+    nanosic_platform.ko \
     wl2868c.ko \
     wl2866d.ko \
+    virtual_fg.ko \
+    xm_battmngr_init.ko \
+    xm_charger.ko \
+    xm_utils.ko \
     xiaomi_touch.ko
 
 BOARD_VENDOR_RAMDISK_RECOVERY_KERNEL_MODULES_LOAD += \
-    goodix_core.ko
+    nt36532_touch.ko
 
 BOOT_KERNEL_MODULES += \
-    goodix_core.ko
+    nt36532_touch.ko
 
 # OTA assert
-TARGET_OTA_ASSERT_DEVICE := vermeer
+TARGET_OTA_ASSERT_DEVICE := sheng
 
 # Properties
 TARGET_ODM_PROP += $(DEVICE_PATH)/properties/odm.prop

@@ -5,4 +5,4 @@
 #
 
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/lineage_vermeer.mk
+    $(LOCAL_DIR)/lineage_sheng.mk
