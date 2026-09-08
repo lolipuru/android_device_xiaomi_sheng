@@ -23,4 +23,4 @@ PRODUCT_MANUFACTURER := Xiaomi
 PRODUCT_GMS_CLIENTID_BASE := android-xiaomi
 
 PRODUCT_BUILD_PROP_OVERRIDES += \
-    BuildFingerprint=Xiaomi/sheng_global/sheng:16/BP2A.250605.031.A3/OS3.0.6.0.WNXMIXM:user/release-keys
+    BuildFingerprint=Xiaomi/sheng_global/sheng:16/BP2A.250605.031.A3/OS3.0.303.0.WNXMIXM:user/release-keys
