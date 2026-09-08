@@ -1091,3 +1091,14 @@ odm/etc/TouchPad_Upgrade_0x03.bin
 odm/firmware/n81a_nova_thp_config.ini
 odm/firmware/novatek_nt36532_n81a_fw_csot.bin
 odm/firmware/novatek_nt36532_n81a_mp_csot.bin
+
+# Touchfeature
+odm/bin/hw/vendor.xiaomi.hw.touchfeature@1.0-service
+odm/bin/touch_report_debug
+odm/bin/toucheventcheck
+odm/etc/init/vendor.xiaomi.hw.touchfeature@1.0-service.rc
+odm/etc/vintf/manifest/vendor.xiaomi.hw.touchfeature@1.0-service.xml
+odm/etc/init.panel_info.sh
+odm/lib64/libtensorflowlite_touch_c.so
+odm/lib64/libtouchreport.so
+odm/lib64/libtouchsensor.so
