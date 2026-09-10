@@ -1097,6 +1097,7 @@ odm/bin/hw/vendor.xiaomi.hw.touchfeature@1.0-service
 odm/bin/touch_report_debug
 odm/bin/toucheventcheck
 odm/etc/init/vendor.xiaomi.hw.touchfeature@1.0-service.rc
+odm/etc/touch/Pencil_Posture.xml
 odm/etc/vintf/manifest/vendor.xiaomi.hw.touchfeature@1.0-service.xml
 odm/etc/init.panel_info.sh
 odm/lib64/libtensorflowlite_touch_c.so
