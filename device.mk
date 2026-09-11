@@ -17,6 +17,12 @@ PRODUCT_COPY_FILES += \
 # IFAAService
 PRODUCT_PACKAGES += \
     IFAAService
+    
+# Keylayout
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/configs/keylayout/NVTCapacitiveTouchScreen.idc:$(TARGET_COPY_OUT_ODM)/usr/idc/NVTCapacitiveTouchScreen.idc \
+    $(LOCAL_PATH)/configs/keylayout/NVTCapacitivePenP81c.idc:$(TARGET_COPY_OUT_ODM)/usr/idc/NVTCapacitivePenP81c.idc \
+    $(LOCAL_PATH)/configs/keylayout/NVTCapacitivePenM80p.idc:$(TARGET_COPY_OUT_ODM)/usr/idc/NVTCapacitivePenM80p.idc
 
 # Overlay
 PRODUCT_PACKAGES += \
