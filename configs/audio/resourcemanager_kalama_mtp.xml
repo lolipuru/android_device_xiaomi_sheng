@@ -79,10 +79,11 @@
         <param key="upd_virtual_port" value ="false" />
     </config_params>
     <config_volume>
-        <use_volume_set_param>0</use_volume_set_param>
+        <use_volume_set_param>1</use_volume_set_param>
         <supported_streams>
-            <supported_stream>PAL_STREAM_ULTRA_LOW_LATENCY</supported_stream>
             <supported_stream>PAL_STREAM_COMPRESSED</supported_stream>
+            <supported_stream>PAL_STREAM_PCM_OFFLOAD</supported_stream>
+            <supported_stream>PAL_STREAM_VOIP_RX</supported_stream>
         </supported_streams>
     </config_volume>
     <config_lpm>
@@ -116,7 +117,7 @@
     <config_voice>
         <vsid>0xB3000000</vsid>
         <loopbackDelay>1000</loopbackDelay>
-        <maxVolIndex>5</maxVolIndex>
+        <maxVolIndex>11</maxVolIndex>
         <mode_map>
             <modepair key="0x11C05000" value="0xB3000001"/>
             <modepair key="0x11DC5000" value="0xB3000001"/>
@@ -183,16 +184,48 @@
             <id>PAL_DEVICE_IN_HANDSET_MIC</id>
             <back_end_name>CODEC_DMA-LPAIF_RXTX-TX-3</back_end_name>
             <max_channels>4</max_channels>
-            <channels>1</channels>
+            <channels>2</channels>
             <samplerate>48000</samplerate>
-            <snd_device_name>handset-mic</snd_device_name>
+            <bit_width>16</bit_width>
+            <snd_device_name>handset-dmic-endfire</snd_device_name>
             <ec_enable>0</ec_enable>
             <usecase>
                 <name>PAL_STREAM_LOW_LATENCY</name>
             </usecase>
             <usecase>
                 <name>PAL_STREAM_DEEP_BUFFER</name>
-                <ec_enable>1</ec_enable>
+                <ec_enable>0</ec_enable>
+                <custom-config key="dual-adc">
+                    <channels>4</channels>
+                    <snd_device_name>handset-stereo-dmic-ef</snd_device_name>
+                    <bit_width>24</bit_width>
+                </custom-config>
+                <custom-config key="main-mic">
+                    <channels>1</channels>
+                    <snd_device_name>main-mic</snd_device_name>
+                </custom-config>
+                <custom-config key="top-mic">
+                    <channels>1</channels>
+                    <snd_device_name>top-mic</snd_device_name>
+                </custom-config>
+                <custom-config key="back-mic">
+                    <channels>1</channels>
+                    <snd_device_name>back-mic</snd_device_name>
+                </custom-config>
+                <custom-config key="default-mic">
+                    <channels>1</channels>
+                    <snd_device_name>handset-mic</snd_device_name>
+                </custom-config>
+                <custom-config key="va-mic-enroll">
+                    <channels>1</channels>
+                    <samplerate>16000</samplerate>
+                    <snd_device_name>va-mic-enroll</snd_device_name>
+                </custom-config>
+                <custom-config key="va-mic-asr">
+                    <channels>2</channels>
+                    <samplerate>16000</samplerate>
+                    <snd_device_name>va-mic-asr</snd_device_name>
+                </custom-config>
                 <custom-config key="unprocessed-hdr-mic-landscape">
                     <channels>4</channels>
                     <snd_device_name>unprocessed-hdr-mic-landscape</snd_device_name>
@@ -220,7 +253,12 @@
         -->
             <usecase>
                 <name>PAL_STREAM_COMPRESSED</name>
-                <ec_enable>1</ec_enable>
+                <ec_enable>0</ec_enable>
+                <custom-config key="dual-adc">
+                    <channels>4</channels>
+                    <snd_device_name>handset-stereo-dmic-ef</snd_device_name>
+                    <bit_width>24</bit_width>
+                </custom-config>
                 <custom-config key="unprocessed-hdr-mic-landscape">
                     <channels>4</channels>
                     <snd_device_name>unprocessed-hdr-mic-landscape</snd_device_name>
@@ -242,10 +280,16 @@
                 <name>PAL_STREAM_VOIP_TX</name>
                 <priority>2</priority>
                 <ec_enable>1</ec_enable>
+                <custom-config key="dual-mic">
+                    <channels>2</channels>
+                    <samplerate>48000</samplerate>
+                    <snd_device_name>handset-dmic-endfire</snd_device_name>
+                </custom-config>
             </usecase>
             <usecase>
                 <name>PAL_STREAM_VOICE_CALL</name>
                 <priority>1</priority>
+                <samplerate>48000</samplerate>
                 <sidetone_mode>HW</sidetone_mode>
                 <bit_width>16</bit_width>
                 <ec_enable>1</ec_enable>
@@ -260,6 +304,11 @@
             </usecase>
             <usecase>
                 <name>PAL_STREAM_ULTRA_LOW_LATENCY</name>
+                <custom-config key="dual-adc">
+                    <channels>4</channels>
+                    <snd_device_name>handset-stereo-dmic-ef</snd_device_name>
+                    <bit_width>24</bit_width>
+                </custom-config>
                 <custom-config key="dual-mic">
                     <channels>2</channels>
                     <snd_device_name>handset-dmic-endfire</snd_device_name>
@@ -284,6 +333,11 @@
                     <channels>4</channels>
                     <snd_device_name>unprocessed-hdr-mic-inverted-portrait</snd_device_name>
                 </custom-config>
+                <custom-config key="unprocessed-top-mic">
+                    <channels>2</channels>
+                    <samplerate>96000</samplerate>
+                    <snd_device_name>unprocessed-top-mic</snd_device_name>
+                </custom-config>
             </usecase>
             <ec_rx_device>
                 <id>PAL_DEVICE_OUT_HANDSET</id>
@@ -295,31 +349,59 @@
             <back_end_name>CODEC_DMA-LPAIF_RXTX-TX-3</back_end_name>
             <max_channels>4</max_channels>
             <samplerate>48000</samplerate>
+            <bit_width>16</bit_width>
             <channels>1</channels>
             <ec_enable>0</ec_enable>
             <snd_device_name>speaker-mic</snd_device_name>
             <usecase>
                 <name>PAL_STREAM_LOW_LATENCY</name>
+                <channels>2</channels>
+                <snd_device_name>handset-dmic-endfire</snd_device_name>
             </usecase>
             <usecase>
                 <name>PAL_STREAM_DEEP_BUFFER</name>
                 <ec_enable>1</ec_enable>
-                <custom-config key="unprocessed-hdr-mic-landscape">
+                <custom-config key="camcorder_landscape">
                     <channels>4</channels>
-                    <snd_device_name>unprocessed-hdr-mic-landscape</snd_device_name>
+                    <snd_device_name>handset-stereo-dmic-ef</snd_device_name>
                 </custom-config>
-                <custom-config key="unprocessed-hdr-mic-portrait">
+                <custom-config key="camcorder_zoom">
+                    <channels>3</channels>
+                    <snd_device_name>camcorder-tmic-azoom</snd_device_name>
+                </custom-config>
+                <custom-config key="dual-adc-spk">
                     <channels>4</channels>
-                    <snd_device_name>unprocessed-hdr-mic-portrait</snd_device_name>
+                    <snd_device_name>handset-stereo-dmic-ef</snd_device_name>
+                    <bit_width>24</bit_width>
                 </custom-config>
-                <custom-config key="unprocessed-hdr-mic-inverted-landscape">
-                    <channels>4</channels>
-                    <snd_device_name>unprocessed-hdr-mic-inverted-landscape</snd_device_name>
+                <custom-config key="main-mic">
+                    <channels>1</channels>
+                    <snd_device_name>main-mic</snd_device_name>
                 </custom-config>
-                <custom-config key="unprocessed-hdr-mic-inverted-portrait">
-                    <channels>4</channels>
-                    <snd_device_name>unprocessed-hdr-mic-inverted-portrait</snd_device_name>
+                <custom-config key="back-mic">
+                    <channels>1</channels>
+                    <snd_device_name>back-mic</snd_device_name>
                 </custom-config>
+                <custom-config key="sidetop-mic">
+                    <channels>1</channels>
+                    <snd_device_name>sidetop-mic</snd_device_name>
+                </custom-config>
+                <custom-config key="sidebottom-mic">
+                    <channels>1</channels>
+                    <snd_device_name>sidebottom-mic</snd_device_name>
+                </custom-config>
+                <custom-config key="va-mic-enroll">
+                    <channels>2</channels>
+                    <samplerate>16000</samplerate>
+                    <snd_device_name>va-mic-enroll</snd_device_name>
+                </custom-config>
+                <custom-config key="va-mic-asr">
+                    <channels>2</channels>
+                    <samplerate>16000</samplerate>
+                    <snd_device_name>va-mic-asr</snd_device_name>
+                </custom-config>
+                <channels>2</channels>
+                <snd_device_name>handset-dmic-endfire</snd_device_name>
             </usecase>
         <!--Uncomment these lines instead of above lines if needing to enable EC per custom key
             <usecase>
@@ -331,7 +413,12 @@
         -->
             <usecase>
                 <name>PAL_STREAM_COMPRESSED</name>
-                <ec_enable>1</ec_enable>
+                <ec_enable>0</ec_enable>
+                <custom-config key="camcorder_landscape">
+                    <channels>4</channels>
+                    <snd_device_name>handset-stereo-dmic-ef</snd_device_name>
+                    <bit_width>24</bit_width>
+                </custom-config>
                 <custom-config key="unprocessed-hdr-mic-landscape">
                     <channels>4</channels>
                     <snd_device_name>unprocessed-hdr-mic-landscape</snd_device_name>
@@ -352,7 +439,25 @@
             <usecase>
                 <name>PAL_STREAM_VOIP_TX</name>
                 <priority>2</priority>
+                <channels>3</channels>
                 <ec_enable>1</ec_enable>
+                <snd_device_name>speaker-tmic-multi</snd_device_name>
+                <custom-config key="game_mode">
+                    <channels>3</channels>
+                    <snd_device_name>speaker-tmic-endfire</snd_device_name>
+                </custom-config>
+                <custom-config key="voip_remote_record_single">
+                    <channels>4</channels>
+                    <snd_device_name>speaker-tmic-single</snd_device_name>
+                </custom-config>
+                <custom-config key="voip_remote_record_multi">
+                    <channels>3</channels>
+                    <snd_device_name>speaker-tmic-multi</snd_device_name>
+                </custom-config>
+                <custom-config key="voip_remote_record_surround">
+                    <channels>3</channels>
+                    <snd_device_name>speaker-tmic-surround</snd_device_name>
+                </custom-config>
             </usecase>
             <usecase>
                 <name>PAL_STREAM_VOICE_CALL</name>
@@ -360,9 +465,9 @@
                 <sidetone_mode>OFF</sidetone_mode>
                 <bit_width>16</bit_width>
                 <ec_enable>1</ec_enable>
-                <channels>2</channels>
-                <snd_device_name>speaker-dmic-endfire</snd_device_name>
                 <custom-config key="dual-mic">
+                    <channels>2</channels>
+                    <snd_device_name>speaker-dmic-endfire</snd_device_name>
                 </custom-config>
                 <custom-config key="quad-mic">
                     <channels>4</channels>
@@ -374,9 +479,19 @@
             </usecase>
             <usecase>
                 <name>PAL_STREAM_ULTRA_LOW_LATENCY</name>
+                <custom-config key="record-customized">
+                    <channels>2</channels>
+                    <snd_device_name>handset-dmic-endfire</snd_device_name>
+                    <bit_width>24</bit_width>
+                </custom-config>
             </usecase>
             <ec_rx_device>
                 <id>PAL_DEVICE_OUT_SPEAKER</id>
+                <id>PAL_DEVICE_OUT_WIRED_HEADSET</id>
+                <id>PAL_DEVICE_OUT_WIRED_HEADPHONE</id>
+                <id>PAL_DEVICE_OUT_HDMI</id>
+                <id>PAL_DEVICE_OUT_AUX_DIGITAL</id>
+                <id>PAL_DEVICE_OUT_AUX_DIGITAL_1</id>
             </ec_rx_device>
         </in-device>
         <in-device>
@@ -384,6 +499,7 @@
             <back_end_name>CODEC_DMA-LPAIF_RXTX-TX-3</back_end_name>
             <max_channels>1</max_channels>
             <channels>1</channels>
+            <bit_width>16</bit_width>
             <snd_device_name>headset-mic</snd_device_name>
             <ec_enable>0</ec_enable>
             <usecase>
@@ -391,6 +507,16 @@
             </usecase>
             <usecase>
                 <name>PAL_STREAM_DEEP_BUFFER</name>
+                <custom-config key="va-mic-enroll">
+                    <channels>1</channels>
+                    <samplerate>16000</samplerate>
+                    <snd_device_name>headset-va-mic-enroll</snd_device_name>
+                </custom-config>
+                <custom-config key="va-mic-asr">
+                    <channels>1</channels>
+                    <samplerate>16000</samplerate>
+                    <snd_device_name>headset-va-mic-asr</snd_device_name>
+                </custom-config>
                 <ec_enable>1</ec_enable>
             </usecase>
         <!--Uncomment these lines instead of above lines if needing to enable EC per custom key
@@ -483,7 +609,7 @@
             <snd_device_name>headset-va-mic</snd_device_name>
             <samplerate>48000</samplerate>
             <bit_width>16</bit_width>
-            <ec_enable>1</ec_enable>
+            <ec_enable>0</ec_enable>
             <ec_rx_device>
                 <id>PAL_DEVICE_OUT_WIRED_HEADSET</id>
                 <id>PAL_DEVICE_OUT_WIRED_HEADPHONE</id>
@@ -498,6 +624,7 @@
             <max_channels>1</max_channels>
             <channels>1</channels>
             <samplerate>48000</samplerate>
+            <bit_width>16</bit_width>
             <ec_enable>0</ec_enable>
             <snd_device_name>usb-headset-mic</snd_device_name>
             <usecase>
@@ -552,7 +679,7 @@
             <id>PAL_DEVICE_IN_PROXY</id>
             <back_end_name>PCM_RT_PROXY-TX-1</back_end_name>
             <max_channels>2</max_channels>
-            <channels>2</channels>
+            <channels>1</channels>
             <snd_device_name>afe-proxy</snd_device_name>
             <usecase>
                 <name>PAL_STREAM_PROXY</name>
@@ -566,11 +693,6 @@
             <samplerate>48000</samplerate>
             <bit_width>32</bit_width>
             <snd_device_name>vi-feedback</snd_device_name>
-            <usecase>
-                <name>PAL_STREAM_VOICE_CALL</name>
-                <channels>1</channels>
-                <snd_device_name>vi-feedback-mono-2</snd_device_name>
-            </usecase>
         </in-device>
         <in-device>
             <id>PAL_DEVICE_IN_CPS_FEEDBACK</id>
@@ -647,12 +769,11 @@
         </in-device>
         <in-device>
             <id>PAL_DEVICE_IN_EXT_EC_REF</id>
-            <!-- The below back_end_name is for internal testing purpose only, needs to be modified to appropriate value if TDM/MI2S -->
-            <back_end_name>CODEC_DMA-LPAIF_WSA-TX-1</back_end_name>
+            <back_end_name>TDM-LPAIF-TX-SECONDARY</back_end_name>
             <snd_device_name>ext_ec_ref_tx</snd_device_name>
-            <max_channels>2</max_channels>
-            <channels>2</channels>
-            <bit_width>16</bit_width>
+            <max_channels>4</max_channels>
+            <channels>4</channels>
+            <bit_width>24</bit_width>
             <samplerate>48000</samplerate>
         </in-device>
         <in-device>
@@ -771,32 +892,32 @@
         </out-device>
         <out-device>
             <id>PAL_DEVICE_OUT_HANDSET</id>
-            <back_end_name>CODEC_DMA-LPAIF_WSA-RX-0</back_end_name>
+            <back_end_name>TDM-LPAIF-RX-SECONDARY</back_end_name>
             <max_channels>2</max_channels>
             <channels>1</channels>
             <!-- To enable external EC reference the flag extec_ref_enabled must be added as 1 -->
-            <ext_ec_ref_enabled>0</ext_ec_ref_enabled>
+            <ext_ec_ref_enabled>1</ext_ec_ref_enabled>
             <samplerate>48000</samplerate>
+            <bit_width>24</bit_width>
             <fractional_sr>0</fractional_sr>
             <snd_device_name>handset</snd_device_name>
-            <handset_protection_enabled>0</handset_protection_enabled>
           <usecase>
               <name>PAL_STREAM_VOICE_CALL</name>
-              <priority>1</priority>
+              <priority>2</priority>
               <custom-config key="HAC">
                  <snd_device_name>voice-handset-hac</snd_device_name> <!-- override sound device name with HAC handset -->
               </custom-config>
           </usecase>
           <usecase>
               <name>PAL_STREAM_VOIP_RX</name>
-              <priority>2</priority>
+              <priority>3</priority>
               <custom-config key="HAC">
                  <snd_device_name>voice-handset-hac</snd_device_name> <!-- override sound device name with HAC handset for voip -->
               </custom-config>
           </usecase>
           <usecase>
               <name>PAL_STREAM_ULTRASOUND</name>
-              <priority>4</priority>
+              <priority>1</priority>
               <samplerate>96000</samplerate>
           </usecase>
         </out-device>
@@ -805,6 +926,7 @@
             <back_end_name>CODEC_DMA-LPAIF_RXTX-RX-0</back_end_name>
             <max_channels>2</max_channels>
             <channels>2</channels>
+            <bit_width>24</bit_width>
             <fractional_sr>1</fractional_sr>
             <snd_device_name>headphones</snd_device_name>
         <!--HIFI Filter Headphones-Uncomment this when param key hifi_filter is true
@@ -831,13 +953,15 @@
                <name>PAL_STREAM_VOICE_CALL</name>
                <priority>1</priority>
                <samplerate>48000</samplerate>
-               <bit_width>16</bit_width>
+               <bit_width>24</bit_width>
+               <snd_device_name>voice-headphones</snd_device_name>
            </usecase>
            <usecase>
                <name>PAL_STREAM_VOIP_RX</name>
                <priority>2</priority>
                <samplerate>48000</samplerate>
-               <bit_width>16</bit_width>
+               <bit_width>24</bit_width>
+               <snd_device_name>voice-headphones</snd_device_name>
            </usecase>
         </out-device>
         <out-device>
@@ -846,6 +970,7 @@
             <max_channels>2</max_channels>
             <channels>2</channels>
             <fractional_sr>1</fractional_sr>
+            <bit_width>24</bit_width>
             <snd_device_name>headphones</snd_device_name>
         <!--HIFI Filter Headphones-Uncomment this when param key hifi_filter is true
             <usecase>
@@ -870,14 +995,16 @@
            <usecase>
                <name>PAL_STREAM_VOICE_CALL</name>
                <priority>1</priority>
-	       <samplerate>48000</samplerate>
-               <bit_width>16</bit_width>
+               <samplerate>48000</samplerate>
+               <bit_width>24</bit_width>
+               <snd_device_name>voice-headphones</snd_device_name>
            </usecase>
            <usecase>
                <name>PAL_STREAM_VOIP_RX</name>
                <priority>2</priority>
                <samplerate>48000</samplerate>
-               <bit_width>16</bit_width>
+               <bit_width>24</bit_width>
+               <snd_device_name>voice-headphones</snd_device_name>
            </usecase>
          </out-device>
         <out-device>
@@ -974,6 +1101,10 @@
             <usecase>
                 <name>PAL_STREAM_VOICE_CALL</name>
                 <priority>1</priority>
+            </usecase>
+            <usecase>
+                <name>PAL_STREAM_COMPRESSED</name>
+                <bit_width>32</bit_width>
             </usecase>
         </out-device>
         <out-device>
@@ -1123,9 +1254,9 @@
             <param support_nlpi_switch="true" />
             <param support_device_switch="true" />
             <param enable_debug_dumps="false" />
-            <param concurrent_capture="true" />
-            <param concurrent_voice_call="true" />
-            <param concurrent_voip_call="true" />
+            <param concurrent_capture="false" />
+            <param concurrent_voice_call="false" />
+            <param concurrent_voip_call="false" />
             <param low_latency_bargein_enable="false" />
         </common_config>
         <capture_profile_list>
@@ -1391,8 +1522,8 @@
                             <context id="0x0800132E" /> <!-- EVENT_BABYCRYING -->
                             <context id="0x0800132F" /> <!-- EVENT_DOGBARKING -->
                             <context id="0x08001330" /> <!-- EVENT_DOORBELL -->
-                            <context id="0x08001331" /> <!-- EVENT_DOOROPENCLOSE -->
-                            <context id="0x08001332" /> <!-- EVENT_CRASH -->
+                            <context id="0x08001331" /> <!-- EVENT_DOORCLOSE -->
+                            <context id="0x08001332" /> <!-- EVENT_DOOROPEN -->
                             <context id="0x08001333" /> <!-- EVENT_GLASSBREAKING -->
                             <context id="0x08001334" /> <!-- EVENT_SIREN -->
                             <context id="0x080013CC" /> <!-- EVENT_CARHONK -->
@@ -1457,7 +1588,7 @@
                 <!-- Voice UI Params used by apk to indicate the Voice UI version current platform supports -->
                 <param version="0x0103" />
                 <param enable_failure_detection="false" />
-                <param notify_second_stage_failure="false" />
+                <param notify_second_stage_failure="true" />
                 <param mmap_enable="true" />
                 <param mmap_buffer_duration="5000" />
                 <!-- 5ms duration of data -->
@@ -1481,15 +1612,170 @@
                 <param pre_roll_duration="500" /> <!-- Default preroll duration -->
                 <!-- durations in us -->
                 <param kw_start_tolerance="360000" />
-                <param kw_end_tolerance="240000" />
+                <param kw_end_tolerance="150000" />
                 <param data_before_kw_start="360000" />
                 <param data_after_kw_end="480000" />
                 <param sample_rate="16000" />
                 <param bit_width="16" />
                 <!-- Module output channels -->
                 <param out_channels="1" />
+                <param second_stage_supported="false" />
                 <operating_modes>
-                    <low_power capture_profile_handset="SINGLE_MIC_16KHZ_16BIT_RAW_LPI" capture_profile_headset="SINGLE_MIC_16KHZ_16BIT_HEADSET_RAW_LPI" />
+                    <low_power capture_profile_handset="DUAL_MIC_16KHZ_16BIT_FFNS" capture_profile_headset="SINGLE_MIC_16KHZ_16BIT_HEADSET_FFNS" />
+                    <high_performance capture_profile_handset="DUAL_MIC_16KHZ_16BIT_FFECNS" capture_profile_headset="SINGLE_MIC_16KHZ_16BIT_HEADSET_FFECNS" />
+                    <high_performance_and_charging capture_profile_handset="DUAL_MIC_16KHZ_16BIT_FFECNS" capture_profile_headset="SINGLE_MIC_16KHZ_16BIT_HEADSET_FFECNS" />
+                </operating_modes>
+                <sound_model_info>
+                    <first_stage_module_params>
+                        <param module_type="GMM" />
+                        <param load_sound_model_ids="0xC0000008, 0x0800104C" />
+                        <param wakeup_config_ids="0xC0000008, 0x08001049" />
+                        <param buffering_config_ids="0xC0000008, 0x08001044" />
+                        <param engine_reset_ids="0xC0000008, 0x08001051" />
+                    </first_stage_module_params>
+                    <first_stage_module_params>
+                        <param module_type="PDK" />
+                        <param load_sound_model_ids="0xC0000008, 0x0800124E" />
+                        <param unload_sound_model_ids="0xC0000008, 0x08001250" />
+                        <param wakeup_config_ids="0xC0000008, 0x08001049" />
+                        <param buffering_config_ids="0xC0000008, 0x0800124F" />
+                        <param engine_reset_ids="0xC0000008, 0x08001051" />
+                    </first_stage_module_params>
+                    <arm_ss_module_params>
+                        <!-- Options are "KEYWORD_DETECTION", "USER_VERIFICATION", "CUSTOM_DETECTION" -->
+                        <param sm_detection_type= "KEYWORD_DETECTION" />
+                        <param sm_id="0x2" />
+                        <param module_lib="libcapiv2svacnnvendor.so" />
+                        <param sample_rate="16000" />
+                        <param bit_width="16" />
+                        <param channel_count="1" />
+                    </arm_ss_module_params>
+                    <arm_ss_module_params>
+                        <param sm_detection_type= "USER_VERIFICATION" />
+                        <param sm_id="0x4" />
+                        <param module_lib="libcapiv2uvvendor.so" />
+                        <param sample_rate="16000" />
+                        <param bit_width="16" />
+                        <param channel_count="1" />
+                    </arm_ss_module_params>
+                    <arm_ss_module_params>
+                        <param sm_detection_type= "KEYWORD_DETECTION" />
+                        <param sm_id="0x8" />
+                        <param module_lib="libcapiv2svarnnvendor.so" />
+                        <param sample_rate="16000" />
+                        <param bit_width="16" />
+                        <param channel_count="1" />
+                    </arm_ss_module_params>
+                    <arm_ss_module_params>
+                        <param sm_detection_type= "KEYWORD_DETECTION" />
+                        <param sm_id="0x40" />
+                        <param module_lib="libcapiv2udk7vendor.so" />
+                        <param sample_rate="16000" />
+                        <param bit_width="16" />
+                        <param channel_count="1" />
+                    </arm_ss_module_params>
+                </sound_model_info>
+            </stream_config>
+            <stream_config>
+                <name>QC_VOICE_UI</name>
+                <param vendor_uuid="68ab2d40-e860-11e3-95ef-0002a5d5c51c" />
+                <param merge_first_stage_sound_models="false" />
+                <!--For now total 3 engines are supported, if more engine instances are needed,-->
+                <!-- do update acdb and usecaseKvManager.xml files by adding more instances    -->
+                <param pdk_first_stage_max_engine_count="3"/>
+                <!-- Profile specific data which the algorithm can support -->
+                <param capture_keyword="2000" /> <!-- Default history buffer length -->
+                <param client_capture_read_delay="2000" /> <!-- reserved buffer duration for rt data -->
+                <param pre_roll_duration="500" /> <!-- Default preroll duration -->
+                <!-- durations in us -->
+                <param kw_start_tolerance="360000" />
+                <param kw_end_tolerance="100000" />
+                <param data_before_kw_start="360000" />
+                <param data_after_kw_end="480000" />
+                <param sample_rate="16000" />
+                <param bit_width="16" />
+                <!-- Module output channels -->
+                <param out_channels="1" />
+                <param second_stage_supported="false" />
+                <operating_modes>
+                    <low_power capture_profile_handset="DUAL_MIC_16KHZ_16BIT_FFNS" capture_profile_headset="SINGLE_MIC_16KHZ_16BIT_HEADSET_FFNS" />
+                    <high_performance capture_profile_handset="DUAL_MIC_16KHZ_16BIT_FFECNS" capture_profile_headset="SINGLE_MIC_16KHZ_16BIT_HEADSET_FFECNS" />
+                    <high_performance_and_charging capture_profile_handset="DUAL_MIC_16KHZ_16BIT_FFECNS" capture_profile_headset="SINGLE_MIC_16KHZ_16BIT_HEADSET_FFECNS" />
+                </operating_modes>
+                <sound_model_info>
+                    <first_stage_module_params>
+                        <param module_type="GMM" />
+                        <param load_sound_model_ids="0xC0000008, 0x0800104C" />
+                        <param wakeup_config_ids="0xC0000008, 0x08001049" />
+                        <param buffering_config_ids="0xC0000008, 0x08001044" />
+                        <param engine_reset_ids="0xC0000008, 0x08001051" />
+                    </first_stage_module_params>
+                    <first_stage_module_params>
+                        <param module_type="PDK" />
+                        <param load_sound_model_ids="0xC0000008, 0x0800124E" />
+                        <param unload_sound_model_ids="0xC0000008, 0x08001250" />
+                        <param wakeup_config_ids="0xC0000008, 0x08001049" />
+                        <param buffering_config_ids="0xC0000008, 0x0800124F" />
+                        <param engine_reset_ids="0xC0000008, 0x08001051" />
+                    </first_stage_module_params>
+                    <arm_ss_module_params>
+                        <!-- Options are "KEYWORD_DETECTION", "USER_VERIFICATION", "CUSTOM_DETECTION" -->
+                        <param sm_detection_type= "KEYWORD_DETECTION" />
+                        <param sm_id="0x2" />
+                        <param module_lib="libcapiv2svacnnvendor.so" />
+                        <param sample_rate="16000" />
+                        <param bit_width="16" />
+                        <param channel_count="1" />
+                    </arm_ss_module_params>
+                    <arm_ss_module_params>
+                        <param sm_detection_type= "USER_VERIFICATION" />
+                        <param sm_id="0x4" />
+                        <param module_lib="libcapiv2uvvendor.so" />
+                        <param sample_rate="16000" />
+                        <param bit_width="16" />
+                        <param channel_count="1" />
+                    </arm_ss_module_params>
+                    <arm_ss_module_params>
+                        <param sm_detection_type= "KEYWORD_DETECTION" />
+                        <param sm_id="0x8" />
+                        <param module_lib="libcapiv2svarnnvendor.so" />
+                        <param sample_rate="16000" />
+                        <param bit_width="16" />
+                        <param channel_count="1" />
+                    </arm_ss_module_params>
+                    <arm_ss_module_params>
+                        <param sm_detection_type= "KEYWORD_DETECTION" />
+                        <param sm_id="0x40" />
+                        <param module_lib="libcapiv2udk7vendor.so" />
+                        <param sample_rate="16000" />
+                        <param bit_width="16" />
+                        <param channel_count="1" />
+                    </arm_ss_module_params>
+                </sound_model_info>
+            </stream_config>
+            <stream_config>
+                <name>QC_VOICE_UI</name>
+                <param vendor_uuid="68ab2d40-e860-11e3-95ef-0002a5d5c51d" />
+                <param merge_first_stage_sound_models="false" />
+                <!--For now total 3 engines are supported, if more engine instances are needed,-->
+                <!-- do update acdb and usecaseKvManager.xml files by adding more instances    -->
+                <param pdk_first_stage_max_engine_count="3"/>
+                <!-- Profile specific data which the algorithm can support -->
+                <param capture_keyword="2000" /> <!-- Default history buffer length -->
+                <param client_capture_read_delay="2000" /> <!-- reserved buffer duration for rt data -->
+                <param pre_roll_duration="500" /> <!-- Default preroll duration -->
+                <!-- durations in us -->
+                <param kw_start_tolerance="700000" />
+                <param kw_end_tolerance="600000" />
+                <param data_before_kw_start="360000" />
+                <param data_after_kw_end="1000000" />
+                <param sample_rate="16000" />
+                <param bit_width="16" />
+                <!-- Module output channels -->
+                <param out_channels="1" />
+                <param second_stage_supported="false" />
+                <operating_modes>
+                    <low_power capture_profile_handset="DUAL_MIC_16KHZ_16BIT_FFNS" capture_profile_headset="SINGLE_MIC_16KHZ_16BIT_HEADSET_FFNS" />
                     <high_performance capture_profile_handset="DUAL_MIC_16KHZ_16BIT_FFECNS" capture_profile_headset="SINGLE_MIC_16KHZ_16BIT_HEADSET_FFECNS" />
                     <high_performance_and_charging capture_profile_handset="DUAL_MIC_16KHZ_16BIT_FFECNS" capture_profile_headset="SINGLE_MIC_16KHZ_16BIT_HEADSET_FFECNS" />
                 </operating_modes>
@@ -1548,7 +1834,7 @@
             <stream_config>
                 <name>HOTWORD_VOICE_UI</name>
                 <param vendor_uuid="7038ddc8-30f2-11e6-b0ac-40a8f03d3f15" />
-                <param get_module_version="false" />
+                <param get_module_version="true" />
                 <param merge_first_stage_sound_models="false" />
                 <param capture_keyword="2000" />
                 <param client_capture_read_delay="2000" />
@@ -1559,9 +1845,9 @@
                 <!-- Module output channels -->
                 <param out_channels="1" />
                 <operating_modes>
-                    <low_power capture_profile_handset="SINGLE_MIC_16KHZ_16BIT_RAW_LPI" capture_profile_headset="SINGLE_MIC_16KHZ_16BIT_HEADSET_RAW_LPI" />
-                    <high_performance capture_profile_handset="DUAL_MIC_16KHZ_16BIT_RAW_NLPI" capture_profile_headset="SINGLE_MIC_16KHZ_16BIT_HEADSET_RAW_NLPI" />
-                    <high_performance_and_charging capture_profile_handset="DUAL_MIC_16KHZ_16BIT_RAW_NLPI" capture_profile_headset="SINGLE_MIC_16KHZ_16BIT_HEADSET_RAW_NLPI" />
+                    <low_power capture_profile_handset="DUAL_MIC_16KHZ_16BIT_RAW_LPI" capture_profile_headset="SINGLE_MIC_16KHZ_16BIT_HEADSET_RAW_LPI" />
+                    <high_performance capture_profile_handset="DUAL_MIC_16KHZ_16BIT_FFECNS" capture_profile_headset="SINGLE_MIC_16KHZ_16BIT_HEADSET_FFECNS" />
+                    <high_performance_and_charging capture_profile_handset="DUAL_MIC_16KHZ_16BIT_FFECNS" capture_profile_headset="SINGLE_MIC_16KHZ_16BIT_HEADSET_FFECNS" />
                 </operating_modes>
                 <sound_model_info>
                     <first_stage_module_params>
@@ -1570,40 +1856,6 @@
                         <param unload_sound_model_ids="0xC0000008, 0x00012C15" />
                         <param buffering_config_ids="0xC0000008, 0x08001044" />
                         <param version_ids="0xC0000008, 0x18000101" />
-                        <param engine_reset_ids="0xC0000008, 0x08001051" />
-                    </first_stage_module_params>
-                </sound_model_info>
-            </stream_config>
-            <!-- CUSTOM Voice UI-->
-            <stream_config>
-                <name>CUSTOM_VOICE_UI</name>
-                <!-- NOTE: Customer need to replace with their own uuid and match with sound model -->
-                <param vendor_uuid="c51c508a-ee1b-11ec-8ea0-0242ac120002" />
-                <param merge_first_stage_sound_models="false" />
-                <!-- Profile specific data which the algorithm can support -->
-                <param capture_keyword="2000" /> <!-- Default history buffer length -->
-                <param client_capture_read_delay="2000" /> <!-- reserved buffer duration for rt data -->
-                <param pre_roll_duration="500" /> <!-- Default preroll duration -->
-                <!-- durations in us -->
-                <param kw_start_tolerance="360000" />
-                <param kw_end_tolerance="240000" />
-                <param data_before_kw_start="360000" />
-                <param data_after_kw_end="480000" />
-                <param sample_rate="16000" />
-                <param bit_width="16" />
-                <!-- Module output channels -->
-                <param out_channels="1" />
-                <operating_modes>
-                    <low_power capture_profile_handset="DUAL_MIC_16KHZ_16BIT_CUSTOM_NS" capture_profile_headset="SINGLE_MIC_16KHZ_16BIT_HEADSET_CUSTOM_NS" />
-                    <high_performance capture_profile_handset="DUAL_MIC_16KHZ_16BIT_CUSTOM_ECNS" capture_profile_headset="SINGLE_MIC_16KHZ_16BIT_HEADSET_CUSTOM_ECNS" />
-                    <high_performance_and_charging capture_profile_handset="DUAL_MIC_16KHZ_16BIT_CUSTOM_ECNS" capture_profile_headset="SINGLE_MIC_16KHZ_16BIT_HEADSET_CUSTOM_ECNS" />
-                </operating_modes>
-                <sound_model_info>
-                    <first_stage_module_params>
-                        <param module_type="CUSTOM1" />
-                        <param load_sound_model_ids="0xC0000008, 0x0800104C" />
-                        <param custom_config_ids="0xC0000008, 0x08001049" />
-                        <param buffering_config_ids="0xC0000008, 0x08001044" />
                         <param engine_reset_ids="0xC0000008, 0x08001051" />
                     </first_stage_module_params>
                 </sound_model_info>
